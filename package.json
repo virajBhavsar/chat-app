@@ -1,0 +1,32 @@
+{
+  "name": "chatapp",
+  "version": "1.0.0",
+  "description": "pear-to-pear chat app",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitTerrer/p2p-chat-app.git"
+  },
+  "author": "viraj bhavsar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bitTerrer/p2p-chat-app/issues"
+  },
+  "homepage": "https://github.com/bitTerrer/p2p-chat-app#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.13.5",
+    "nodemon": "^2.0.12",
+    "react": "^17.0.2",
+    "socket.io": "^4.1.3",
+    "@hapi/joi": "^15.0.3",
+    "bcryptjs": "^2.4.3",
+    "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1"
+  }
+}
