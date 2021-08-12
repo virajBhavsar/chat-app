@@ -1,18 +1,15 @@
 import React, {Component} from 'react';
-import  imgUrl from './images/unnamed.jpg'
+import  imgUrl from '../images/unnamed.jpg'
 import Messages from './messages.js';
-import { v4 as uuidv4 } from 'uuid';
 
 class MessageBox extends Component{
 	state = {
 		messageValue : '',
-		messages : [
-			{message:"acjsak",sender:this.props.active,id:uuidv4()},
-			{message:"hi",sender:this.props.user,status:"seen",id:uuidv4()},
-			{message:"hi",sender:this.props.user,status:"seen",id:uuidv4()},
-			{message:"hi",sender:this.props.user,status:"sent",id:uuidv4()},
-			{message:"hi",sender:this.props.user,status:"time",id:uuidv4()},
-		]
+		messages : []
+	}
+
+	componentDidUpMount = () => {
+		console.log("featch on update");
 	}
 
 	handleSendMsg = (e) => {

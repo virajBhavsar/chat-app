@@ -3,11 +3,16 @@ const app = express();
 const bodyParser = require("body-parser");
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+
 const mongoose = require("mongoose");
-const messaging = require("./routes/messaging");
+// routes import
 const auth = require('./routes/auth');
+const tokenCheck = require('./routes/tokenCheck');
+const messages = require('./routes/messages');
+
 // Body Parser middleware
 app.use(bodyParser.json());
+
 
 // db connection
 const db = require("./config/keys").mongoURI;
@@ -23,11 +28,21 @@ mongoose
   });
 
 // use routes
-app.use("/api/message",messaging);
-app.use("/api/auth",auth);
+function cors(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "auth-token");
+
+  next()
+}
+app.use("/api/auth",cors,auth);
+app.use("/api/check",cors,tokenCheck);
+app.use("/api/messages",messages);
+
+
 
 const port = process.env.PORT || 5500;
 server.listen(port,() => {
   console.log("S E R V E R R U N N I N G O N 5 5 0 0");
 })
+
 

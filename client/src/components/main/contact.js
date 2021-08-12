@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import imgUrl from './images/unnamed.jpg'
+import imgUrl from '../images/unnamed.jpg'
 
 class Contact extends Component{
 	

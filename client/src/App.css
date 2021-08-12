@@ -8,6 +8,14 @@ body{
 	height: 100vh;
 	overflow: hidden;
 }
+.account-nav{
+	width:30%;
+	height: 5vh;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: white;	
+}
 .contacts{
 	width:30%;
 	height: 100vh;
@@ -22,6 +30,10 @@ body{
 	width: 70%;	
 }
 .App{
+	display: flex;
+}
+.main{
+	width: 100%;
 	display: flex;
 }
 .one-contact{
@@ -99,7 +111,7 @@ body{
 
 .message-form{
 	position: absolute;
-	bottom: 0;
+	bottom: 0.5vh;
 	height: 5vh;
 	width: 70%;
 	/*background: red;*/
@@ -135,3 +147,126 @@ body{
 .icon14{
 	font-size: 14px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+  .auth-form {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+	padding-top: 25px;
+	height: 60vh;
+	width: 30%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: column;
+	font-family: sans-serif;
+	border-radius: 10px;
+  }
+  
+  .input-box {
+	margin-top: 10px;
+	width: 90%;
+	position: relative;
+	height: 70px;
+	overflow: hidden;
+	font-size: 1.2rem;
+  }
+  
+  .input-box input {
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+	color: black;
+	padding-top: 20px;
+	padding-bottom: 0;
+	outline: none;
+	border: none;
+	border-bottom: black solid 1px;
+	font-size: 1.2rem;
+  }
+  
+  .input-box label {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-bottom: 1px solid white;
+	pointer-events: none;
+  }
+  .input-box label::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	height: 100%;
+	width: 100%;
+	border-bottom: 3px solid #00e1ff;
+	transform: translateX(-100%);
+	transition: all 0.4s ease;
+  }
+  .span {
+	position: absolute;
+	bottom: 5px;
+	left: 0px;
+	transition: all 0.3s ease;
+  }
+  #submit {
+	  border-radius: 10px;
+	cursor: pointer;
+	margin: auto;
+	background-color: rgb(0, 0, 0);
+	color: #00e1ff;
+	width: fit-content;
+	height: fit-content;
+	padding: 10px 20px;
+	font-size: 1rem;
+	border: none;
+	outline: none;
+  }
+  #submit:hover {
+	background-color: #00e1ff;
+	color: rgb(254, 253, 255);
+  }
+  #submit:active {
+	box-shadow: 0 0 25px white;
+  }
+  .input-box input:focus + .label span,
+  .input-box input:valid + .label span {
+	transform: translatey(-150%);
+  }
+  
+  .input-box input:focus + .label::after,
+  .input-box input:valid + .label::after {
+	transform: translateX(0%);
+  }
+
+
+  .error-red{
+  	color: red;
+  	position: absolute;
+  	bottom:10vh;
+  	left: 50%;
+  	transform: translateX(-50%);
+
+  }
+
+  .other-link{
+  	position: absolute;
+  	bottom:2vh;
+  	left: 50%;
+  	transform: translateX(-50%);
+
+  }

@@ -3,9 +3,7 @@ import StatusIcon from './statusIcon.js';
 
 class Messages extends Component{
   componentDidUpdate() {
-  	console.log("jfdgak");
   	const messages = document.querySelector(".messages");
-  	console.log(messages);
    messages.scrollTop = messages.scrollHeight;
 	}
 
