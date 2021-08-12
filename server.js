@@ -46,3 +46,10 @@ server.listen(port,() => {
 })
 
 
+
+
+//  db.messages.drop()
+//  db.users.drop()
+//  db.createCollection("messages")
+//  db.createCollection("users")
+

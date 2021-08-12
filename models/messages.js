@@ -7,12 +7,12 @@ const messageSchema = new mongoose.Schema({
     senderId:{
         type:String,
     },
-    recieverId:{
-        type:String,
-    },
     status:{
         type:String,
         default:"time"
+    },
+    recieverId:{
+        type:String,
     },
     date:{
         type: Date,
@@ -20,7 +20,7 @@ const messageSchema = new mongoose.Schema({
     }
 })
 const messagesSchema = new mongoose.Schema({
-    userID: {
+    userId: {
         type: String,
         require: true
     },
