@@ -19,6 +19,8 @@ const messageSchema = new mongoose.Schema({
         default:Date.now()
     }
 })
+
+
 const messagesSchema = new mongoose.Schema({
     userId: {
         type: String,

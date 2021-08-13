@@ -34,7 +34,8 @@ router.post('/register', async(req, res) => {
 		user.save()
 		.then(user => {
 			const messenger = new Messages({
-				userId: user._id
+				userId: user._id,
+				contacts : "1"
 			});
 			messenger.save()
 				.then(msg => res.send(msg))
