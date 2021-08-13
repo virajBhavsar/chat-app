@@ -10,7 +10,6 @@ class Messages extends Component{
 render(){
 		return(
 			<div className="messages">
-			<h1>{this.props.user.username}</h1>
 				<ul>
 					{this.props.messages.map(message => {
 					 if(message.sender === this.props.user){

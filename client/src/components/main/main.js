@@ -31,12 +31,14 @@ class Main extends Component {
             "auth-token": this.props.user.token
           }
       }) 
-      console.log(contact);
+      console.log("this")
       if(contact.data.error){
         console.log(contact.data.error)
+        this.props.popup(contact.data.error,false);
       }else{
-      console.log(contact);
-      this.setState({
+        this.props.popup('contact added successfully',true);
+        console.log(contact);
+        this.setState({
         contacts: [contact.data,...this.state.contacts]
       })
     }

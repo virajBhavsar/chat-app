@@ -26,10 +26,10 @@ function Register (props) {
 				email: email,
 				password:password
 			})
-			console.log(user);
 			if(user.data.type){
 				setError(user.data.error);	
 			}else{
+				props.popup('account creted successfully',true);
 				window.location.replace("/");
 			}
 		}

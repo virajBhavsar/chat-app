@@ -64,10 +64,10 @@ router.patch('/recieve',varify,(req,res)=>{
 })
 
 router.patch('/addcontact',varify, async(req,res)=>{
+	try{
 	const chatUser = await User.findOne({email:req.body.email});
 	const messages = await Messages.findOne({userId : req.user._id});
 	let contact = messages.contacts.filter(contact => contact == chatUser._id)
-	console.log(chatUser);
 
 	if(contact.length == 0 && chatUser){
 		Messages.updateOne(
@@ -78,6 +78,8 @@ router.patch('/addcontact',varify, async(req,res)=>{
 		.catch(err => res.send(err))
 	}else{
 		res.json({"error":"contact already added"});
+	}}catch(err){
+		res.json({"error":"contact not found"})
 	}
 })
 

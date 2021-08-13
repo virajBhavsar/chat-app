@@ -13,11 +13,24 @@ import Logout from './components/auth/logout';
 
 class App extends Component {
   state = JSON.parse(window.localStorage.getItem('state')) || {
-  // state ={
+    // state={
     user: {},
-    privatePageAccess:false
+    privatePageAccess:false,
+    popup:{visible:false,success:true,message:''}
   }
 
+  popup = (msg,succ) => {
+    this.setState({
+      popup:{visible:true,success:succ,message:msg}
+    })
+
+    setTimeout(()=>{
+      this.setState({
+        popup:{visible:false,success:false,message:''}
+      })
+    },5000)
+  }
+  
 	authenticateUser = async(user) =>{
 		this.setState({
 			user:{username:user.username,email:user.email,token:user.token},
@@ -43,12 +56,15 @@ class App extends Component {
       <Router>
 
         <div className="App">
-          
+          <div className={this.state.popup.visible ? "pop-up visible" : "pop-up"} >
+            <span className={this.state.popup.success ? "green" : "red"}></span>
+            <p>{this.state.popup.message}</p>
+          </div>
           <Switch>
             <Route path="/main">
               {()=>{
                 if(this.state.privatePageAccess){
-                  return <Main rollbackAuth={this.rollbackAuth} user={this.state.user}/>                       
+                  return <Main popup={this.popup} rollbackAuth={this.rollbackAuth} user={this.state.user}/>                       
                 }else{
                   return <Redirect to="/" />
                 }
@@ -56,13 +72,13 @@ class App extends Component {
               }
             </Route>
             <Route path="/register">
-              <Register privatePageAccess={this.state.privatePageAccess}/>
+              <Register popup={this.popup} privatePageAccess={this.state.privatePageAccess}/>
             </Route>
             <Route path="/logout">
               <Logout />
             </Route>
             <Route path="/">
-              <Login privatePageAccess={this.state.privatePageAccess} authenticateUser={this.authenticateUser} />
+              <Login popup={this.popup} privatePageAccess={this.state.privatePageAccess} authenticateUser={this.authenticateUser} />
             </Route>
           </Switch>
 

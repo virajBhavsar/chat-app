@@ -21,9 +21,10 @@ function Login (props) {
 			})
 			console.log(user);
 			if(user.data.type){
-				setError(user.data.error);
+				setError(user.data.error);			
 			}else{
 				props.authenticateUser(user.data);
+				props.popup('login successfully',true)
 			}
 		}
 		const Errors = () =>{

@@ -1,15 +1,11 @@
 import React, {Component} from 'react';
 import  imgUrl from '../images/unnamed.jpg'
 import Messages from './messages.js';
-
+import {GrSend} from 'react-icons/gr';
 class MessageBox extends Component{
 	state = {
 		messageValue : '',
 		messages : []
-	}
-
-	componentDidUpMount = () => {
-		console.log("featch on update");
 	}
 
 	handleSendMsg = (e) => {
@@ -18,6 +14,7 @@ class MessageBox extends Component{
 			messageValue : '',
 			messages: [...this.state.messages,{message:this.state.messageValue,sender:this.props.user,status:"time"}]
 		})
+
 	}
 	handleStatusChange = (id,to) => {
 		let newArr = [...this.state.messages];
@@ -37,12 +34,12 @@ class MessageBox extends Component{
 		<div className="message-box">
 			<div className="message-box-nav">
 				<img alt="profpic" className="profile-pic-small" src={imgUrl} />
-				<h1 className="sender-name">{this.props.active.name}</h1>
+				<h1 className="sender-name">{this.props.active.username}</h1>
 			</div>
 			<Messages user={this.props.user} messages = {this.state.messages} />
 			<form onSubmit={this.handleSendMsg} className="message-form">
 				<input onChange={this.handleChange} value={this.state.messageValue} placeholder="type a message"/>
-				<button>send</button>
+				<button className="msg-send-btn"><GrSend /></button>
 			</form>
 		</div>
 		);

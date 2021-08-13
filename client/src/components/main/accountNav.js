@@ -11,19 +11,20 @@ function AccountNav (props) {
 		}
 		const handleAddContact = (event) =>{
 			event.preventDefault();
-			props.handleAddContact(email)
+			props.handleAddContact(email);
+			setShowForm(false);
 		}
 		const rollbackAuth = () => {
 			props.rollbackAuth();
 		}
 		return (
 			<div className="account-nav">
-				<button onClick={()=>setShowForm(true)}><AiOutlinePlus /></button>
-				<form onSubmit={handleAddContact}>
+				<Link className={showForm ? "invisible" : "logout-btn visible"} to="/logout" onClick={rollbackAuth}><BsPower /></Link>
+				<button className={showForm ? "invisible" : "add-contact-btn visible"} onClick={()=>setShowForm(true)}><AiOutlinePlus /></button>
+				<form className={showForm ? "contact-form visible" : "invisible"} onSubmit={handleAddContact}>
 					<input placeholder="enter an email address" onChange={handleEmailChange} value={email} />
-					<button type="submit"><AiOutlinePlus /></button>
+					<button className="add-contact-btn" type="submit"><AiOutlinePlus /></button>
 				</form>
-				<Link className="logout-btn" to="/logout" onClick={rollbackAuth}><BsPower /></Link>
 			</div>
 		);
 	

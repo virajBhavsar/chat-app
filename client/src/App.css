@@ -8,18 +8,73 @@ body{
 	height: 100vh;
 	overflow: hidden;
 }
+
+.pop-up{
+	transition: 2s ease all;
+	position: absolute;
+	bottom: 20px;
+	left: 20px;
+	background: #e6e2d8;
+	height: 10vh;
+	width: 25%;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	display: none;
+	z-index: 1;
+}
+.visible{
+	display: flex;
+}
+.invisible{
+	display: none;
+}
+.pop-up span{
+	position: relative;
+	color: green;
+	width: 100%;
+	height: 20%;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+}
+.pop-up p {
+	word-wrap: break-word;
+	padding: 10px;
+}
+.green{
+	background: green;
+}
+.red{
+	background: red;
+}
 .contacts{
-	width:30%;
-	height: 100vh;
-	padding: 5vh 0;
+	width:31%;
+	height: 92vh;
+	position: absolute;
+	left: 0;
+	top: 8vh;
 	background: #0081f1;
 	color: #fff;
 	font-size: 0.7rem;
+	overflow-y: scroll;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.one-contact{
+	width: 100%;
+	display: flex;
+	border-bottom: 1px grey solid;
+	overflow: hidden;
 }
 .message-box{
 	background: #29adff;
 	height: 100vh;
 	width: 70%;	
+	position: absolute;
+	right: 0;
+	border-left:1px solid #b6b8b6;
+
 }
 .App{
 	display: flex;
@@ -28,13 +83,7 @@ body{
 	width: 100%;
 	display: flex;
 }
-.one-contact{
-	display: flex;
-	/*align-items: center;*/
-	border-bottom: 1px grey solid;
-	margin: 0 10px;
-	overflow: hidden;
-}
+
 .profile-pic-small{
 	border-radius: 50%;
 	padding: 10px 10px;
@@ -68,13 +117,13 @@ body{
 	list-style: none;
 }
 
-.messages::-webkit-scrollbar {
+.messages::-webkit-scrollbar,.contacts::-webkit-scrollbar {
   width: 10px;
 }
-.messages ::-webkit-scrollbar-track {
+.messages ::-webkit-scrollbar-track,.contacts ::-webkit-scrollbar-track {
   background: transparent;
 }
-.messages::-webkit-scrollbar-thumb {
+.messages::-webkit-scrollbar-thumb,.contacts::-webkit-scrollbar-thumb  {
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 20px;
 }
@@ -105,17 +154,17 @@ body{
 	position: absolute;
 	bottom: 0.5vh;
 	height: 5vh;
-	width: 70%;
+	width: 95%;
 	/*background: red;*/
 	display: flex;
 
 }
 .message-form input{
 	position: relative;
-	width: 95%;
+	width: 100%;
 	margin: 0 1%;
 	height: 100%;
-	border-radius: 25px;
+	border-radius: 50px;
 	padding: 0 25px;
 	outline: none;
 	border : none;
@@ -136,19 +185,15 @@ body{
 	right: 5px;
 	font-size: 10px;
 }
+.msg-send-btn{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1.2rem;
+}
 .icon14{
 	font-size: 14px;
 }
-
-
-
-
-
-
-
-
-
-
 
 
   .auth-form {
@@ -265,19 +310,45 @@ body{
 
 .account-nav{
 	width:30%;
-	height: 5vh;
-	padding: 0 2%;
+	height: 8vh;
+	padding: 0 10px;
 	position: absolute;
 	top: 0;
 	left: 0;
 	background: white;
 	display: flex;
 	align-items: center;
-	justify-content: flex-end;
+	justify-content: space-between;
 }
 
   .logout-btn{
   	font-size: 2rem;
+  }
 
+  .contact-form{
+  	width: 100%;
+  	height: 80%;
+  	display: flex;
+  	justify-content: space-between;
+  	align-items: center;
+  }
+  .contact-form input{
+  	width: 90%;
+  	border: none;
+  	outline: none;
+  	padding: 0 10px;
+  }
+  .add-contact-btn{
+  	cursor: pointer;
+  	display: flex;
+  	justify-content: center;
+  	align-items: center;
+  	font-size: 1.2rem;
+  	background: #0ff238;
+  	width: 4vh;
+  	height: 4vh;
+  	border-radius: 50%;
+  	border: none;
+  	outline: none;
   }
 

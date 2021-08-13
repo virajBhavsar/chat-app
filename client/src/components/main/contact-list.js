@@ -8,7 +8,7 @@ class ContactList extends Component{
 
 		<div className="contacts">
 		{this.props.contacts.map(contact => (
-			<Contact lastmsg={this.props.lastmsg} setActive={() => this.props.handleSetActive(contact)} className={this.props.active.number === contact.number ? "one-contact active-contact" : "one-contact"} key={contact._id} contact={contact}/>
+			<Contact lastmsg={this.props.lastmsg} setActive={() => this.props.handleSetActive(contact)} className={this.props.active.email === contact.email ? "one-contact active-contact" : "one-contact"} key={contact._id} contact={contact}/>
 			)	
 		)}
 		</div>
