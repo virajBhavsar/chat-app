@@ -67,16 +67,17 @@ router.patch('/addcontact',varify, async(req,res)=>{
 	const chatUser = await User.findOne({email:req.body.email});
 	const messages = await Messages.findOne({userId : req.user._id});
 	let contact = messages.contacts.filter(contact => contact == chatUser._id)
+	console.log(chatUser);
 
-	if(contact.length == 0){
+	if(contact.length == 0 && chatUser){
 		Messages.updateOne(
 			{userId : req.user._id},
 			{$push:{contacts : chatUser._id}}
 		)
-		.then(msg => res.json({data:msg}))
+		.then(msg => res.json({_id:chatUser._id,email:chatUser.email,username:chatUser.name}))
 		.catch(err => res.send(err))
 	}else{
-		res.json({"message":"contact already added"});
+		res.json({"error":"contact already added"});
 	}
 })
 

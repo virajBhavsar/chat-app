@@ -8,14 +8,6 @@ body{
 	height: 100vh;
 	overflow: hidden;
 }
-.account-nav{
-	width:30%;
-	height: 5vh;
-	position: absolute;
-	top: 0;
-	left: 0;
-	background: white;	
-}
 .contacts{
 	width:30%;
 	height: 100vh;
@@ -270,3 +262,22 @@ body{
   	transform: translateX(-50%);
 
   }
+
+.account-nav{
+	width:30%;
+	height: 5vh;
+	padding: 0 2%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: white;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+}
+
+  .logout-btn{
+  	font-size: 2rem;
+
+  }
+

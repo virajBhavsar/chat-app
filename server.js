@@ -36,7 +36,7 @@ function cors(req, res, next) {
 }
 app.use("/api/auth",cors,auth);
 app.use("/api/check",cors,tokenCheck);
-app.use("/api/messages",messages);
+app.use("/api/messages",cors,messages);
 
 
 

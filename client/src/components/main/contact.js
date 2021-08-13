@@ -8,7 +8,7 @@ class Contact extends Component{
 		<div className={this.props.className}>
 			<img alt="profpic" className="profile-pic-small" src={imgUrl} />
 			<div onClick={this.props.setActive} className="contact-data">
-				<h1 className="contact-name">{this.props.contact.name}</h1>
+				<h1 className="contact-name">{this.props.contact.username}</h1>
 				<p className="last-msg">{this.props.lastmsg}</p>
 			</div>
 		</div>		
