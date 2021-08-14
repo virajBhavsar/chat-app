@@ -19,8 +19,9 @@ router.get('/:_id/:page',varify, async(req, res) => {
 	const pageNo = req.params.page;
 	const pagination = 100;
 	let msg = messages.messages.filter(msg =>  msg.senderId === req.params._id || msg.recieverId === req.params._id);
+	const pages = Math.ceil(msg.length / 100);
 	msg = paginate(pageNo,pagination,msg);
-	res.json(msg);
+	res.json({"msg":msg,"pages":pages});
 });
 
 router.get('/contacts',varify,async(req,res)=>{
@@ -32,7 +33,6 @@ router.get('/contacts',varify,async(req,res)=>{
 		let data = {_id:user._id,username:user.name,email:user.email}
 		contactx.push(data);
 	}
-
 	res.send(contactx);
 })
 
@@ -70,14 +70,18 @@ router.patch('/addcontact',varify, async(req,res)=>{
 	const messages = await Messages.findOne({userId : req.user._id});
 	let contact = messages.contacts.filter(contact => contact == chatUser._id)
 
-	if(contact.length == 0 && chatUser){
+	if(contact.length == 0){
+		if(chatUser){
 		Messages.updateOne(
 			{userId : req.user._id},
 			{$push:{contacts : chatUser._id}}
 		)
 		.then(msg => res.json({_id:chatUser._id,email:chatUser.email,username:chatUser.name}))
 		.catch(err => res.send(err))
-	}else{
+		
+		}else{
+			res.json({"error":"contact not found"})
+		}}else{
 		res.json({"error":"contact already added"});
 	}}catch(err){
 		res.json({"error":"contact not found"})

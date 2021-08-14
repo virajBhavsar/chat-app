@@ -19,7 +19,6 @@ function Login (props) {
 				email: email,
 				password:password
 			})
-			console.log(user);
 			if(user.data.type){
 				setError(user.data.error);			
 			}else{

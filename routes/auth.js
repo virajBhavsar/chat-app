@@ -7,7 +7,6 @@ const secretToken = require('../config/token').TOKEN_SECRET;
 const Messages = require('../models/messages');
 
 router.post('/register', async(req, res) => {
-	console.log("user registered");
 	// validation of data
 		const {error} = registerValidation(req.body);
 		if(error) return res.status(400).json({type:"validation",error:error.details[0].message});
@@ -51,7 +50,6 @@ router.post('/login', async(req,res)=>{
 	// check if user exist
 		const user = await User.findOne({email:req.body.email});
 		if (!user)  res.json({type:"notfound",error:'user not found'});
-		console.log(user);
 	//	varifying password
 		const validPass = await bcrypt.compare(req.body.password,user.password);
 		if (!validPass) return res.json({type:"varification",error:'Incorrect password'});

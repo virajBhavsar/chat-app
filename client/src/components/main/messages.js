@@ -2,14 +2,18 @@ import React, {Component} from 'react';
 import StatusIcon from './statusIcon.js';
 
 class Messages extends Component{
-  componentDidUpdate() {
+	onScroll = () => {
   	const messages = document.querySelector(".messages");
-   messages.scrollTop = messages.scrollHeight;
+  	const prevHeight = messages.scrollHeight;
+  	if(messages.scrollTop === 0){
+  		this.props.prependMessages(()=>{
+  			messages.scrollTop = messages.scrollHeight - prevHeight;
+  		});
+		}
 	}
-
 render(){
 		return(
-			<div className="messages">
+			<div onScroll={this.onScroll} className="messages">
 				<ul>
 					{this.props.messages.map(message => {
 					 if(message.senderId === this.props.user._id){
@@ -25,8 +29,6 @@ render(){
 					 	}
 					 
 				})}
-
-				
 				</ul>
 			</div>
 		);
