@@ -22,7 +22,14 @@ class Main extends Component {
     })
      }
 
-     handleAddContact = async(email) => {
+     
+
+  handleSetActive = (contact) => {
+    this.setState({
+      active: contact
+    })
+  }
+  handleAddContact = async(email) => {
       console.log(email);
       const contact = await axios.patch("http://127.0.0.1:5500/api/messages/addcontact",
         {"email": email}
@@ -31,24 +38,16 @@ class Main extends Component {
             "auth-token": this.props.user.token
           }
       }) 
-      console.log("this")
+      this.handleSetActive(contact.data);
       if(contact.data.error){
-        console.log(contact.data.error)
         this.props.popup(contact.data.error,false);
       }else{
         this.props.popup('contact added successfully',true);
-        console.log(contact);
         this.setState({
         contacts: [contact.data,...this.state.contacts]
       })
     }
     }
-
-  handleSetActive = (contact) => {
-    this.setState({
-      active: contact
-    })
-  }
   render() {
     return (
         <div className="main">

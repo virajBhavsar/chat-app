@@ -33,7 +33,7 @@ class App extends Component {
   
 	authenticateUser = async(user) =>{
 		this.setState({
-			user:{username:user.username,email:user.email,token:user.token},
+			user:{_id:user._id,username:user.username,email:user.email,token:user.token},
       privatePageAccess : true
 		},()=>{
     window.localStorage.setItem('state', JSON.stringify(this.state));

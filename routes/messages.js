@@ -12,16 +12,15 @@ function paginate(pageNo,pagination,msg){
 		}else{
 			return msg.slice(-(pageNo*pagination),-(pageNo*pagination -pagination));
 		}
-}
-}
+}}
 
 router.get('/:_id/:page',varify, async(req, res) => {
 	const messages = await Messages.findOne({userId : req.user._id});
 	const pageNo = req.params.page;
-	const pagination = 10;
+	const pagination = 100;
 	let msg = messages.messages.filter(msg =>  msg.senderId === req.params._id || msg.recieverId === req.params._id);
 	msg = paginate(pageNo,pagination,msg);
-	res.send(msg);
+	res.json(msg);
 });
 
 router.get('/contacts',varify,async(req,res)=>{
@@ -32,24 +31,26 @@ router.get('/contacts',varify,async(req,res)=>{
 		let user = await User.findOne({_id:messages.contacts[i]})
 		let data = {_id:user._id,username:user.name,email:user.email}
 		contactx.push(data);
-		console.log(contactx);
 	}
 
 	res.send(contactx);
-	console.log("end");
 })
 
-router.patch('/send',varify,(req,res)=>{
-	Messages.updateOne(
+router.patch('/send',varify,async(req,res)=>{
+	try{
+	const updateEffect = await Messages.updateOne(
 	{userId : req.user._id},
 	{$push:{messages:{
 		"content" : req.body.content,
 		"senderId" : req.user._id,
 		"recieverId" : req.body.recieverId
 	}}})
-	.then(msg => res.json({data:msg}))
-	.catch(err => res.send(err))
-})
+	const msg = await Messages.findOne({userId : req.user._id})
+	res.json(msg.messages[msg.messages.length - 1])
+	}catch(err){
+		res.json({"error":err});
+	}
+	})
 
 router.patch('/recieve',varify,(req,res)=>{
 	Messages.updateOne(
@@ -59,7 +60,7 @@ router.patch('/recieve',varify,(req,res)=>{
 		"senderId" :req.body.senderId,
 		"recieverId" :req.user._id
 	}}})
-	.then(msg => res.json({data:msg}))
+	.then(msg => res.json({data : msg}))
 	.catch(err => res.send(err))
 })
 

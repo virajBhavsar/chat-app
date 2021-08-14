@@ -12,15 +12,15 @@ render(){
 			<div className="messages">
 				<ul>
 					{this.props.messages.map(message => {
-					 if(message.sender === this.props.user){
+					 if(message.senderId === this.props.user._id){
 					 	return(
-					 	<li key={message.id} className="message right-message">
-					 		<div className="only-message">{message.message}</div>
+					 	<li key={message._id} className="message right-message">
+					 		<div className="only-message">{message.content}</div>
 							<StatusIcon status={message.status} />
 					 	</li>
 						)}else{
 					 		return(
-					 		<li className="message left-message">{message.message}</li>
+					 		<li key={message._id} className="message left-message">{message.message}</li>
 					 		)
 					 	}
 					 
