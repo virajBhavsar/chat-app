@@ -12,11 +12,11 @@ body{
 .pop-up{
 	transition: 2s ease all;
 	position: absolute;
-	bottom: 20px;
-	left: 20px;
+	right: 20px;
+	top: 20px;
 	background: #e6e2d8;
 	height: 10vh;
-	width: 25%;
+	width: 18%;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
@@ -48,7 +48,7 @@ body{
 	background: red;
 }
 .contacts{
-	width:31%;
+	width:20%;
 	height: 92vh;
 	position: absolute;
 	left: 0;
@@ -56,10 +56,9 @@ body{
 	background: #0081f1;
 	color: #fff;
 	font-size: 0.7rem;
-	overflow-y: scroll;
-	display: flex;
 	flex-direction: column;
 	align-items: center;
+	overflow-y: scroll;
 }
 .one-contact{
 	width: 100%;
@@ -70,7 +69,7 @@ body{
 .message-box{
 	background: #29adff;
 	height: 100vh;
-	width: 70%;	
+	width: 80%;	
 	position: absolute;
 	right: 0;
 	border-left:1px solid #b6b8b6;
@@ -118,20 +117,20 @@ body{
 }
 
 .messages::-webkit-scrollbar,.contacts::-webkit-scrollbar {
-  width: 10px;
+  width: 4px;
 }
 .messages ::-webkit-scrollbar-track,.contacts ::-webkit-scrollbar-track {
   background: transparent;
 }
 .messages::-webkit-scrollbar-thumb,.contacts::-webkit-scrollbar-thumb  {
   background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 20px;
+  border-radius: 2px;
 }
 
 .message{
 	background: white;
 	width: fit-content;
-	padding: 10px 20px;
+	padding: 3px 20px;
 	border-radius: 10px;
 	margin: 3px 20px;
 	max-width: 70%;
@@ -154,14 +153,14 @@ body{
 	position: absolute;
 	bottom: 0.5vh;
 	height: 5vh;
-	width: 95%;
+	width: 100%;
 	/*background: red;*/
 	display: flex;
 
 }
 .message-form input{
 	position: relative;
-	width: 100%;
+	width: 98%;
 	margin: 0 1%;
 	height: 100%;
 	border-radius: 50px;
@@ -169,9 +168,9 @@ body{
 	outline: none;
 	border : none;
 	font-size: 1rem;
-
 }
 .message-form button{
+	margin-right: 1%;
 	width: 5vh;
 	height: 5vh;
 	outline: none;
@@ -309,7 +308,7 @@ body{
   }
 
 .account-nav{
-	width:30%;
+	width:20%;
 	height: 8vh;
 	padding: 0 10px;
 	position: absolute;
@@ -337,6 +336,7 @@ body{
   	border: none;
   	outline: none;
   	padding: 0 10px;
+  	font-size: 1.2rem;
   }
   .add-contact-btn{
   	cursor: pointer;
@@ -351,4 +351,28 @@ body{
   	border: none;
   	outline: none;
   }
+
+.msg-time{
+	position: absolute;
+	font-size: 0.9rem;
+	bottom: 2px;
+	right: 25px;
+}
+.only-message{
+	margin: 5px 5px;
+	padding-right: 45px;
+}
+
+@media screen and (max-width: 920px) {
+	.contacts{
+		width: 30%;
+	}
+
+.account-nav{
+	width:30%;
+}
+	.message-box{
+		width: 70%;
+	}
+}
 

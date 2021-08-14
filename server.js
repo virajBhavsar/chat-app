@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
-const server = require('http').Server(app);
+const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 const mongoose = require("mongoose");
@@ -37,7 +37,6 @@ function cors(req, res, next) {
 app.use("/api/auth",cors,auth);
 app.use("/api/check",cors,tokenCheck);
 app.use("/api/messages",cors,messages);
-
 
 
 const port = process.env.PORT || 5500;

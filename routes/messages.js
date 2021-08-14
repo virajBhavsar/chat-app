@@ -78,7 +78,6 @@ router.patch('/addcontact',varify, async(req,res)=>{
 		)
 		.then(msg => res.json({_id:chatUser._id,email:chatUser.email,username:chatUser.name}))
 		.catch(err => res.send(err))
-		
 		}else{
 			res.json({"error":"contact not found"})
 		}}else{

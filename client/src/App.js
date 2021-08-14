@@ -46,7 +46,6 @@ class App extends Component {
       user:{},
       privatePageAccess : false
     },()=>{
-    console.log(this.state)
     window.localStorage.setItem('state', JSON.stringify(this.state));
     });
     

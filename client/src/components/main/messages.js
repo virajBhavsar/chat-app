@@ -9,8 +9,7 @@ class Messages extends Component{
   		this.props.prependMessages(()=>{
   			messages.scrollTop = messages.scrollHeight - prevHeight;
   		});
-		}
-	}
+		}}
 render(){
 		return(
 			<div onScroll={this.onScroll} className="messages">
@@ -20,6 +19,7 @@ render(){
 					 	return(
 					 	<li key={message._id} className="message right-message">
 					 		<div className="only-message">{message.content}</div>
+					 		<p className="msg-time">{message.date.slice(11,16)}</p>
 							<StatusIcon status={message.status} />
 					 	</li>
 						)}else{
@@ -27,7 +27,6 @@ render(){
 					 		<li key={message._id} className="message left-message">{message.message}</li>
 					 		)
 					 	}
-					 
 				})}
 				</ul>
 			</div>
