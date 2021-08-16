@@ -26,14 +26,20 @@ const messagesSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    socketId: {
+        type: String,
+        require: true
+    },
+    online:{
+        type:Boolean,
+        default:false
+    },
     messages:{
         type: [messageSchema]
     },
     contacts:{
         type:[String]
     }
-
-
 })
 
 module.exports = mongoose.model('messages', messagesSchema)

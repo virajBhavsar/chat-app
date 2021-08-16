@@ -358,6 +358,12 @@ body{
 	bottom: 2px;
 	right: 25px;
 }
+.left-message .msg-time{
+	right: 10px;
+}
+.left-message .only-message{
+	padding-right: 30px;
+}
 .only-message{
 	margin: 5px 5px;
 	padding-right: 45px;

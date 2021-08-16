@@ -16,12 +16,13 @@ function paginate(pageNo,pagination,msg){
 
 router.get('/:_id/:page',varify, async(req, res) => {
 	const messages = await Messages.findOne({userId : req.user._id});
+	console.log("messages : " + messages.online);
 	const pageNo = req.params.page;
 	const pagination = 100;
 	let msg = messages.messages.filter(msg =>  msg.senderId === req.params._id || msg.recieverId === req.params._id);
 	const pages = Math.ceil(msg.length / 100);
 	msg = paginate(pageNo,pagination,msg);
-	res.json({"msg":msg,"pages":pages});
+	res.json({"msg":msg,"pages":pages,"online":messages.online});
 });
 
 router.get('/contacts',varify,async(req,res)=>{
@@ -36,10 +37,18 @@ router.get('/contacts',varify,async(req,res)=>{
 	res.send(contactx);
 })
 
+
 router.patch('/send',varify,async(req,res)=>{
 	try{
-	const updateEffect = await Messages.updateOne(
+	let updateEffect = await Messages.updateOne(
 	{userId : req.user._id},
+	{$push:{messages:{
+		"content" : req.body.content,
+		"senderId" : req.user._id,
+		"recieverId" : req.body.recieverId
+	}}})
+	updateEffect = await Messages.updateOne(
+	{userId : req.body.recieverId},
 	{$push:{messages:{
 		"content" : req.body.content,
 		"senderId" : req.user._id,
@@ -51,18 +60,6 @@ router.patch('/send',varify,async(req,res)=>{
 		res.json({"error":err});
 	}
 	})
-
-router.patch('/recieve',varify,(req,res)=>{
-	Messages.updateOne(
-	{userId : req.user._id},
-	{$push:{messages:{
-		"content" : req.body.content,
-		"senderId" :req.body.senderId,
-		"recieverId" :req.user._id
-	}}})
-	.then(msg => res.json({data : msg}))
-	.catch(err => res.send(err))
-})
 
 router.patch('/addcontact',varify, async(req,res)=>{
 	try{

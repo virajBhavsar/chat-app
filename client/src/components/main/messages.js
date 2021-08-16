@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import StatusIcon from './statusIcon.js';
 
 class Messages extends Component{
+
 	onScroll = () => {
   	const messages = document.querySelector(".messages");
   	const prevHeight = messages.scrollHeight;
@@ -24,7 +25,12 @@ render(){
 					 	</li>
 						)}else{
 					 		return(
-					 		<li key={message._id} className="message left-message">{message.message}</li>
+					 		<li key={message._id} className="message left-message">
+					 			<div className="only-message">
+					 				{message.content}
+					 			</div>
+					 			<p className="msg-time">{message.date.slice(11,16)}</p>
+					 		</li>
 					 		)
 					 	}
 				})}

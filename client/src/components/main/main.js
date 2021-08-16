@@ -11,6 +11,8 @@ class Main extends Component {
   }
 
   componentDidMount = async() => {
+
+    this.props.socket.emit('goOnline',this.props.user);
     const contacts = await axios.get("http://127.0.0.1:5500/api/messages/contacts",{
         headers:{
           "auth-token": this.props.user.token
@@ -22,6 +24,7 @@ class Main extends Component {
     })
      }
 
+componentDidUnmount
      
 
   handleSetActive = (contact) => {
@@ -51,9 +54,9 @@ class Main extends Component {
   render() {
     return (
         <div className="main">
-                <AccountNav handleAddContact={this.handleAddContact} rollbackAuth={this.props.rollbackAuth} />
+                <AccountNav user={this.props.user} socket={this.props.socket} handleAddContact={this.handleAddContact} rollbackAuth={this.props.rollbackAuth} />
                 <ContactList active={this.state.active} contacts={this.state.contacts} handleSetActive={this.handleSetActive} />
-                <Messages user={this.props.user} active={this.state.active} />
+                <Messages user={this.props.user} active={this.state.active} socket={this.props.socket}/>
         </div>
     )
   }

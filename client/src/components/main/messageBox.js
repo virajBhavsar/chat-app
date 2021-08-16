@@ -12,6 +12,7 @@ class MessageBox extends Component{
 		maxPage:1,
 	}
 
+
 	gotoBottom = () => {
 		try{
 			const messages = document.querySelector(".messages");
@@ -20,8 +21,27 @@ class MessageBox extends Component{
 		}
 	}
 
-async componentDidUpdate(prevProp){
-	if(prevProp.active !== this.props.active){
+async componentDidUpdate(prevProp,prevState){
+	if(prevState.messages !== this.state.messages){
+	this.props.socket.off('recieve').on('recieve',(msg)=>{
+		const message = {
+				content: msg.content,
+				date: msg.date,
+				recieverId: msg.recieverId,
+				senderId: msg.senderId,
+				status: msg.status,
+				_id: msg._id
+		} 
+
+		this.setState({
+			messages:[...this.state.messages,message],
+		})
+		this.gotoBottom();
+
+		})
+
+	}	
+if(prevProp.active !== this.props.active){
 		const messages = await axios.get(`http://127.0.0.1:5500/api/messages/${this.props.active._id}/1`,{
           headers:{
             "auth-token": this.props.user.token
@@ -33,7 +53,9 @@ async componentDidUpdate(prevProp){
 }
 	
 
+
 	prependMessages = async(callback) => {
+
 		if(this.state.dataCount > this.state.maxPage){
 		}else{
 	const messages = await axios.get(`http://127.0.0.1:5500/api/messages/${this.props.active._id}/${this.state.dataCount}`,{
@@ -55,6 +77,8 @@ async componentDidUpdate(prevProp){
 
 	handleSendMsg = async(e) => {
 		e.preventDefault();
+		
+	
 		const message = await axios.patch("http://127.0.0.1:5500/api/messages/send",
         {"content":this.state.messageValue,"recieverId":this.props.active._id}
       ,{
@@ -67,6 +91,7 @@ async componentDidUpdate(prevProp){
 			messages:[...this.state.messages,message.data],
 		})
 		this.gotoBottom();
+		this.props.socket.emit('send',message);
 	}
 
 	handleStatusChange = (id,to) => {
@@ -84,15 +109,14 @@ async componentDidUpdate(prevProp){
 	}
 
 	render(){
-
-		if(this.props.active._id){
+			if(this.props.active._id){
 		return(
 		<div className="message-box">
 			<div className="message-box-nav">
 				<img alt="profpic" className="profile-pic-small" src={imgUrl} />
 				<h1 className="sender-name">{this.props.active.username}</h1>
 			</div>
-			<Messages prependMessages={this.prependMessages} user={this.props.user} messages = {this.state.messages} />
+			<Messages socket={this.props.socket} prependMessages={this.prependMessages} user={this.props.user} messages = {this.state.messages} />
 			<form onSubmit={this.handleSendMsg} className="message-form">
 				<input onChange={this.handleChange} value={this.state.messageValue} placeholder="type a message"/>
 				<button className="msg-send-btn"><GrSend /></button>

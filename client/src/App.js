@@ -10,10 +10,12 @@ import Login from './components/auth/login';
 import Register from './components/auth/register';
 import Main from './components/main/main';
 import Logout from './components/auth/logout';
+const io = require("socket.io-client");
+const socket = io('http://localhost:5500');
 
 class App extends Component {
-  state = JSON.parse(window.localStorage.getItem('state')) || {
-    // state={
+  // state = JSON.parse(window.localStorage.getItem('state')) || {
+    state={
     user: {},
     privatePageAccess:false,
     popup:{visible:false,success:true,message:''}
@@ -36,7 +38,7 @@ class App extends Component {
 			user:{_id:user._id,username:user.username,email:user.email,token:user.token},
       privatePageAccess : true
 		},()=>{
-    window.localStorage.setItem('state', JSON.stringify(this.state));
+    // window.localStorage.setItem('state', JSON.stringify(this.state));
       
     });
 	}
@@ -46,7 +48,7 @@ class App extends Component {
       user:{},
       privatePageAccess : false
     },()=>{
-    window.localStorage.setItem('state', JSON.stringify(this.state));
+    // window.localStorage.setItem('state', JSON.stringify(this.state));
     });
     
   }
@@ -63,7 +65,7 @@ class App extends Component {
             <Route path="/main">
               {()=>{
                 if(this.state.privatePageAccess){
-                  return <Main popup={this.popup} rollbackAuth={this.rollbackAuth} user={this.state.user}/>                       
+                  return <Main socket={socket} popup={this.popup} rollbackAuth={this.rollbackAuth} user={this.state.user}/>                       
                 }else{
                   return <Redirect to="/" />
                 }

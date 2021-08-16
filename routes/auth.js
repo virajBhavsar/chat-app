@@ -34,6 +34,7 @@ router.post('/register', async(req, res) => {
 		.then(user => {
 			const messenger = new Messages({
 				userId: user._id,
+				socketId :""
 			});
 			messenger.save()
 				.then(msg => res.send(msg))
@@ -58,6 +59,8 @@ router.post('/login', async(req,res)=>{
 		// create and asign jw token
 		const token = jwt.sign({_id: user._id}, secretToken);
 		res.header('auth-token',token).json({_id:user._id,username:user.name,email:user.email,token:token});	
+		
+		
 	}catch(err){
 		res.json({"error":err})
 	}
