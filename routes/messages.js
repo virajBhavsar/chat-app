@@ -14,16 +14,30 @@ function paginate(pageNo,pagination,msg){
 		}
 }}
 
+function setMsgSeen(userId,MsgId){
+  	return new Promise(async(resolve, reject) => {
+  		const msgs = await Messages.updateOne(
+			{userId:userId,"messages._id":MsgId},
+			{$set:{"messages.$.status":"seen"}}
+		)
+		resolve(msgs)
+	})
+}
+
 router.get('/:_id/:page',varify, async(req, res) => {
 	const messages = await Messages.findOne({userId : req.user._id});
-	console.log("messages : " + messages.online);
+	const unseenMsgs = messages.messages.filter(msg => msg.status !== "seen");
+	unseenMsgs.map(async msg => await setMsgSeen(req.params._id,msg.ref));
+	const sender = await Messages.findOne({userId : req.params._id});
 	const pageNo = req.params.page;
 	const pagination = 100;
 	let msg = messages.messages.filter(msg =>  msg.senderId === req.params._id || msg.recieverId === req.params._id);
 	const pages = Math.ceil(msg.length / 100);
 	msg = paginate(pageNo,pagination,msg);
-	res.json({"msg":msg,"pages":pages,"online":messages.online});
+	res.json({"msg":msg,"pages":pages,"online":sender.online});
 });
+
+
 
 router.get('/contacts',varify,async(req,res)=>{
 	const messages = await Messages.findOne({userId : req.user._id});
@@ -37,6 +51,10 @@ router.get('/contacts',varify,async(req,res)=>{
 	res.send(contactx);
 })
 
+router.patch('/messageSeen',varify,async(req,res)=>{
+	const msgs = await setMsgSeen(req.body.userId,req.body._id)
+	res.json(msgs);
+})
 
 router.patch('/send',varify,async(req,res)=>{
 	try{
@@ -47,15 +65,21 @@ router.patch('/send',varify,async(req,res)=>{
 		"senderId" : req.user._id,
 		"recieverId" : req.body.recieverId
 	}}})
-	updateEffect = await Messages.updateOne(
+	updateEffect = await Messages.findOne({userId : req.user._id})
+	updateEffect2 = await Messages.updateOne(
 	{userId : req.body.recieverId},
 	{$push:{messages:{
+		"ref":updateEffect.messages[updateEffect.messages.length - 1]._id,
 		"content" : req.body.content,
 		"senderId" : req.user._id,
 		"recieverId" : req.body.recieverId
 	}}})
-	const msg = await Messages.findOne({userId : req.user._id})
-	res.json(msg.messages[msg.messages.length - 1])
+	updateEffect2 = await Messages.findOne({userId : req.body.recieverId})
+
+	res.json({
+		"senderMsg" : updateEffect.messages[updateEffect.messages.length - 1],
+		"recieverMsg" :updateEffect2.messages[updateEffect2.messages.length - 1]
+	})
 	}catch(err){
 		res.json({"error":err});
 	}

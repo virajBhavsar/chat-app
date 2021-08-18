@@ -53,40 +53,49 @@ const io = socket(server,{
 io.on("connection", socket => {
   console.log("new connection")
   socket.on('send',(msg)=>{
-    // console.log(msg.data);
-    Messages.findOne({userId:msg.data.recieverId})
+    Messages.findOne({userId:msg.recieverId})
     .then(reciever => {
       if(reciever.online){
-        socket.to(reciever.socketId).emit('recieve',msg.data);
-        
+        socket.to(reciever.socketId).emit('recieve',msg);
+      }
+    })
+    .catch(err => console.log(err));
+  })
+  socket.on('sendAck',(msg)=>{
+      Messages.findOne({userId:msg.senderId})
+    .then(sender => {
+      if(sender.online){
+        socket.to(sender.socketId).emit('recieveAck',msg.ref);
       }
     })
     .catch(err => console.log(err));
   })
   socket.on('goOnline',(user)=>{
-    console.log(socket.id + " onlline");
-    Messages.updateOne({userId : user._id},{online:true,socketId:socket.id})
-      .then(msg => console.log("useronline"))
+    Messages.findOneAndUpdate({userId : user._id},{online:true,socketId:socket.id})
+      .then(msg => io.emit('onlineStatus',true,msg.userId))
       .catch(err => console.log(err))
   })
   socket.on('goOffline',()=>{
-    // console.log("SOCKET : " + socket.id + "offline");
-    Messages.updateOne({socketId : socket.id},{online:false,socketId:""})
-      .then(msg => console.log("EXPRESS: user offline"))
+    Messages.findOneAndUpdate({socketId : socket.id},{online:false,socketId:""})
+      .then(msg => io.emit('onlineStatus',false,msg.userId))
       .catch(err => console.log(err))
   })
   socket.on('disconnect',()=>{
-    console.log("user disconnected")
-    socket.emit('goOffline')
+    console.log("user disconnected" + socket.id);
+    console.log("emited")
   })
 })
 
 
+// cd driveX/js/chat-app
+// npm start
+// cd client
+// npm start
 
 
- // db.messages.drop()
- // db.users.drop()
- // db.createCollection("messages")
- // db.createCollection("users")
+// db.messages.drop()
+// db.users.drop()
+// db.createCollection("messages")
+// db.createCollection("users")
 
 // git remote add origin http://chatapp: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@github.com/virajBhavsar/chat-app.git

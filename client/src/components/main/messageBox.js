@@ -6,13 +6,12 @@ import axios from 'axios';
 
 class MessageBox extends Component{
 	state = {
+		online : false,
 		messageValue : '',
 		messages : [],
 		dataCount: 2,
 		maxPage:1,
 	}
-
-
 	gotoBottom = () => {
 		try{
 			const messages = document.querySelector(".messages");
@@ -22,32 +21,43 @@ class MessageBox extends Component{
 	}
 
 async componentDidUpdate(prevProp,prevState){
+	this.props.socket.on('onlineStatus',(status,userId)=>{
+		if(this.props.active._id === userId){
+			this.setState({
+				online:status
+			})
+		}
+	})
 	if(prevState.messages !== this.state.messages){
-	this.props.socket.off('recieve').on('recieve',(msg)=>{
-		const message = {
-				content: msg.content,
-				date: msg.date,
-				recieverId: msg.recieverId,
-				senderId: msg.senderId,
-				status: msg.status,
-				_id: msg._id
-		} 
-
+	this.props.socket.off('recieve').on('recieve',async(msg)=>{
+		if(msg.senderId === this.props.active._id){
+		this.props.socket.emit('sendAck',msg)
 		this.setState({
-			messages:[...this.state.messages,message],
+			messages:[...this.state.messages,msg],
 		})
 		this.gotoBottom();
+		const message = await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
+        {userId:msg.senderId,_id:msg._id}
+      ,{
+          headers:{
+            "auth-token": this.props.user.token
+          }
+      })
+		
+		}})
+	}
 
-		})
-
-	}	
 if(prevProp.active !== this.props.active){
 		const messages = await axios.get(`http://127.0.0.1:5500/api/messages/${this.props.active._id}/1`,{
           headers:{
             "auth-token": this.props.user.token
           }
       });
-      this.setState({messages:messages.data.msg,maxPage:messages.data.pages})
+      this.setState({
+      	messages:messages.data.msg,
+      	maxPage:messages.data.pages,
+      	online:messages.data.online
+      })
       this.gotoBottom();
     }
 }
@@ -56,15 +66,13 @@ if(prevProp.active !== this.props.active){
 
 	prependMessages = async(callback) => {
 
-		if(this.state.dataCount > this.state.maxPage){
-		}else{
+		if(this.state.dataCount <= this.state.maxPage){
 	const messages = await axios.get(`http://127.0.0.1:5500/api/messages/${this.props.active._id}/${this.state.dataCount}`,{
           headers:{
             "auth-token": this.props.user.token
           }
       });
 
-   		// console.log(messages.data.msg.concat(this.state.messages));
 		const newArr =	messages.data.msg.concat(this.state.messages); 
     this.setState({
     	messages:newArr,
@@ -75,32 +83,39 @@ if(prevProp.active !== this.props.active){
 	}
 
 
+
 	handleSendMsg = async(e) => {
 		e.preventDefault();
-		
-	
 		const message = await axios.patch("http://127.0.0.1:5500/api/messages/send",
         {"content":this.state.messageValue,"recieverId":this.props.active._id}
       ,{
           headers:{
             "auth-token": this.props.user.token
           }
-      }) 
+      })
+
 		this.setState({
 			messageValue : '',
-			messages:[...this.state.messages,message.data],
+			messages:[...this.state.messages,message.data.senderMsg],
 		})
 		this.gotoBottom();
-		this.props.socket.emit('send',message);
+
+		// console.log(message.data.recieverMsg);
+		this.props.socket.emit('send',message.data.recieverMsg);
+		this.props.socket.off('recieveAck').on('recieveAck',msgRef=>{
+			let index = this.state.messages.findIndex(x => x._id === msgRef)
+			const msg = this.state.messages[index]
+			msg.status = "seen";
+			this.setState({
+				messages:[
+					...this.state.messages.slice(0,index),
+					msg,
+					...this.state.messages.slice(index + 1)
+				]
+			})
+		});
 	}
 
-	handleStatusChange = (id,to) => {
-		let newArr = [...this.state.messages];
-		newArr[id].status = to;
-		this.setState({
-			messages:newArr
-		})
-	}
 
 	handleChange = (event) => {
 		this.setState({
@@ -114,7 +129,11 @@ if(prevProp.active !== this.props.active){
 		<div className="message-box">
 			<div className="message-box-nav">
 				<img alt="profpic" className="profile-pic-small" src={imgUrl} />
-				<h1 className="sender-name">{this.props.active.username}</h1>
+				<div className="sender-name">
+				<h1>{this.props.active.username}</h1>
+				<p className="chat-status">{this.state.online ? "online": ""}</p>
+				</div>
+
 			</div>
 			<Messages socket={this.props.socket} prependMessages={this.prependMessages} user={this.props.user} messages = {this.state.messages} />
 			<form onSubmit={this.handleSendMsg} className="message-form">

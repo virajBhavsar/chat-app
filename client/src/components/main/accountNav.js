@@ -15,7 +15,7 @@ function AccountNav (props) {
 			setShowForm(false);
 		}
 		const rollbackAuth = () => {
-			props.socket.emit('goOffline',props.user._id);
+			props.socket.emit('goOffline');
 			props.rollbackAuth();
 		}
 		return (

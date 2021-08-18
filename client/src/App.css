@@ -193,6 +193,15 @@ body{
 .icon14{
 	font-size: 14px;
 }
+.sender-name{
+	padding: 0 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.sender-name p {
+	padding: 0 2px;
+}
 
 
   .auth-form {
