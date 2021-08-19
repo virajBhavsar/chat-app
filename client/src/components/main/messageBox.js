@@ -36,7 +36,7 @@ async componentDidUpdate(prevProp,prevState){
 			messages:[...this.state.messages,msg],
 		})
 		this.gotoBottom();
-		const message = await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
+		await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
         {userId:msg.senderId,_id:msg._id}
       ,{
           headers:{
@@ -53,6 +53,19 @@ if(prevProp.active !== this.props.active){
             "auth-token": this.props.user.token
           }
       });
+		let unseenMsgs = messages.data.msg.filter(msg => msg.status !== "seen" && msg.senderId === this.props.active._id);
+		unseenMsgs.map(
+			async msg => {
+				this.props.socket.emit('sendAck',msg)
+				await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
+								{_id:msg.ref,userId:this.props.active._id},
+								{headers:{"auth-token": this.props.user.token}}
+					)
+				await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
+								{_id:msg._id,userId:this.props.user._id},
+								{headers:{"auth-token": this.props.user.token}}
+					)
+			})
       this.setState({
       	messages:messages.data.msg,
       	maxPage:messages.data.pages,
@@ -72,10 +85,22 @@ if(prevProp.active !== this.props.active){
             "auth-token": this.props.user.token
           }
       });
-
-		const newArr =	messages.data.msg.concat(this.state.messages); 
+let unseenMsgs = messages.data.msg.filter(msg => msg.status !== "seen" && msg.senderId === this.props.active._id);
+		unseenMsgs.map(
+			async msg => {
+				this.props.socket.emit('sendAck',msg)
+				await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
+								{_id:msg.ref,userId:this.props.active._id},
+								{headers:{"auth-token": this.props.user.token}}
+					)
+				await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
+								{_id:msg._id,userId:this.props.user._id},
+								{headers:{"auth-token": this.props.user.token}}
+					)
+			})
+    
     this.setState({
-    	messages:newArr,
+    	messages:messages.data.msg.concat(this.state.messages),
     	dataCount : this.state.dataCount + 1
     })
     callback();
@@ -103,6 +128,7 @@ if(prevProp.active !== this.props.active){
 		// console.log(message.data.recieverMsg);
 		this.props.socket.emit('send',message.data.recieverMsg);
 		this.props.socket.off('recieveAck').on('recieveAck',msgRef=>{
+
 			let index = this.state.messages.findIndex(x => x._id === msgRef)
 			const msg = this.state.messages[index]
 			msg.status = "seen";
@@ -113,6 +139,10 @@ if(prevProp.active !== this.props.active){
 					...this.state.messages.slice(index + 1)
 				]
 			})
+				axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
+								{_id:msg._id,userId:this.props.user._id},
+								{headers:{"auth-token": this.props.user.token}}
+					)
 		});
 	}
 

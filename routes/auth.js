@@ -6,6 +6,7 @@ const {registerValidation, loginValidation} = require('../validation');
 const secretToken = require('../config/token').TOKEN_SECRET;
 const Messages = require('../models/messages');
 
+
 router.post('/register', async(req, res) => {
 	// validation of data
 		const {error} = registerValidation(req.body);

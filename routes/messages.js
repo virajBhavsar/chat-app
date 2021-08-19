@@ -20,14 +20,17 @@ function setMsgSeen(userId,MsgId){
 			{userId:userId,"messages._id":MsgId},
 			{$set:{"messages.$.status":"seen"}}
 		)
+		if(msgs){
 		resolve(msgs)
+	}else{
+		reject("not found")
+	}
 	})
 }
 
 router.get('/:_id/:page',varify, async(req, res) => {
+	try{
 	const messages = await Messages.findOne({userId : req.user._id});
-	const unseenMsgs = messages.messages.filter(msg => msg.status !== "seen");
-	unseenMsgs.map(async msg => await setMsgSeen(req.params._id,msg.ref));
 	const sender = await Messages.findOne({userId : req.params._id});
 	const pageNo = req.params.page;
 	const pagination = 100;
@@ -35,12 +38,13 @@ router.get('/:_id/:page',varify, async(req, res) => {
 	const pages = Math.ceil(msg.length / 100);
 	msg = paginate(pageNo,pagination,msg);
 	res.json({"msg":msg,"pages":pages,"online":sender.online});
+	}catch(err){}
 });
 
 
 
 router.get('/contacts',varify,async(req,res)=>{
-	const messages = await Messages.findOne({userId : req.user._id});
+	try{const messages = await Messages.findOne({userId : req.user._id});
 	let contactx = [];
 
 	for(let i=0;i<messages.contacts.length;i++){
@@ -49,11 +53,14 @@ router.get('/contacts',varify,async(req,res)=>{
 		contactx.push(data);
 	}
 	res.send(contactx);
+	}catch(err){}
 })
 
 router.patch('/messageSeen',varify,async(req,res)=>{
-	const msgs = await setMsgSeen(req.body.userId,req.body._id)
+	try{const msgs = await setMsgSeen(req.body.userId,req.body._id)
 	res.json(msgs);
+		}catch(err){}
+
 })
 
 router.patch('/send',varify,async(req,res)=>{
@@ -86,9 +93,13 @@ router.patch('/send',varify,async(req,res)=>{
 	})
 
 router.patch('/addcontact',varify, async(req,res)=>{
-	try{
+	try{		
 	const chatUser = await User.findOne({email:req.body.email});
 	const messages = await Messages.findOne({userId : req.user._id});
+	if(chatUser._id == req.user._id){
+		res.json({"error":"it's your email Id"});
+	}else{
+
 	let contact = messages.contacts.filter(contact => contact == chatUser._id)
 
 	if(contact.length == 0){
@@ -103,6 +114,7 @@ router.patch('/addcontact',varify, async(req,res)=>{
 			res.json({"error":"contact not found"})
 		}}else{
 		res.json({"error":"contact already added"});
+	}	
 	}}catch(err){
 		res.json({"error":"contact not found"})
 	}
