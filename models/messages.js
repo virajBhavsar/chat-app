@@ -1,48 +1,42 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-    ref:{
+    senderId:{
         type:String,
-        default:""
+    },
+    type:{
+        type:String,
+        default:"msg"
     },
     content:{
-        type:String,
-    },
-    senderId:{
         type:String,
     },
     status:{
         type:String,
         default:"time"
     },
-    recieverId:{
-        type:String,
-    },
     date:{
         type: Date,
-        default:Date.now() 
+        default:Date.now
     }
 })
 
 
 const messagesSchema = new mongoose.Schema({
-    userId: {
-        type: String,
-        require: true
+    date:{
+        type: Date,
+        default: Date.now
     },
-    socketId: {
-        type: String,
-        require: true
+    type : {
+        type:String,
+        default : "individual"
     },
-    online:{
-        type:Boolean,
-        default:false
+    members:{
+        type:[String],
+        require:true
     },
     messages:{
         type: [messageSchema]
-    },
-    contacts:{
-        type:[String]
     }
 })
 

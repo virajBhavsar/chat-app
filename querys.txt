@@ -1,0 +1,81 @@
+DB SCHEMA MSGS :=================================
+
+
+
+
+localhost:5500/api/messages/addcontact
+
+{
+    "email" : "test@2.com",
+    "_id" : "6177fd8168c659371d1baed8"
+}
+
+localhost:5500/api/messages/send
+ {
+     "_id" : "6177f6b0fbf94d32eaf196b4",
+     "chatId" : "6177f80b918db533fb223fbf",
+     "content" : "N E W M S G"
+}
+
+
+
+// A C C E S S E D  B Y  M E M B E R S  O N L Y
+{
+	"CHAT_id" : ObjectId("6176d4142231b8eab6cc194b"),
+	"type" : "group",
+	"members" : [
+		"viraj'S ID",
+		"Dj'S ID"
+	],
+	"online":"false",
+	"date" : "Mon Oct 25 2021 21:31:00 GMT+0530 (IST)",
+	"msgs" : [
+		{
+			"sender" : "Dj'S ID",
+			"content" : "hii",
+			"status" : "seen",
+			"date" : "11:59AM",
+			"type" : "greet"
+		},
+		{
+			"sender" : "Dj'ID",
+			"content" : "N E W M S G",
+			"status" : "time",
+			"date" : "12:00 PM",
+			"type" : "msg"
+
+		}
+	]
+}
+
+
+
+// find all
+db.messages.find().pretty()
+
+// D R O P
+db.messages.drop()
+
+// C R E A T E
+db.createCollection('messages')
+
+
+// ADD TWO CHATS
+db.messages.insert({members:['viraj','karan'],date:Date(),msgs:[{sender:'karan',content:'hii'}]})
+db.messages.insert({members:['viraj','Dj'],date:Date(),msgs:[{sender:'Dj',content:'hii'}]})
+
+
+// FIND VIRAJ'S CHAT
+db.messages.find({members:{$all:['viraj']}}).sort({date:-1}).pretty()
+
+
+
+// ADD NEW MSG
+
+db.messages.update({"_id" : ObjectId("617810a8d3280a17be8b9eca")},{$push:{msgs:{sender:'Dj',content:'N E W bro'}}})
+
+//SET AS LETTEST CHAT
+
+db.messages.update("_id" : ObjectId("6176d4142231b8eab6cc194b")},{$set:{date:Date()}})
+
+

@@ -2,6 +2,7 @@ const router = require('express').Router();
 const varify = require('./tokenVarifier')
 const Messages = require('../models/messages');
 const User = require('../models/User');
+const Sockets = require('../models/sockets');
 
 function paginate(pageNo,pagination,msg){
 	if(pageNo > ((msg.length / pagination) | 0)){
@@ -14,110 +15,157 @@ function paginate(pageNo,pagination,msg){
 		}
 }}
 
-function setMsgSeen(userId,MsgId){
-  	return new Promise(async(resolve, reject) => {
-  		const msgs = await Messages.updateOne(
-			{userId:userId,"messages._id":MsgId},
-			{$set:{"messages.$.status":"seen"}}
-		)
-		if(msgs){
-		resolve(msgs)
-	}else{
-		reject("not found")
-	}
-	})
-}
-
+// chatId through param
+// page
 router.get('/:_id/:page',varify, async(req, res) => {
 	try{
-	const messages = await Messages.findOne({userId : req.user._id});
-	const sender = await Messages.findOne({userId : req.params._id});
-	const pageNo = req.params.page;
-	const pagination = 100;
-	let msg = messages.messages.filter(msg =>  msg.senderId === req.params._id || msg.recieverId === req.params._id);
-	const pages = Math.ceil(msg.length / 100);
-	msg = paginate(pageNo,pagination,msg);
-	res.json({"msg":msg,"pages":pages,"online":sender.online});
-	}catch(err){}
+	const chat = await Messages.findOne({_id : req.params._id});
+	for(let i=0;i<chat.messages.length;i++){
+		if(chat.messages[chat.messages.length - (i+1)].senderId !== req.user._id){
+			if(chat.messages[chat.messages.length - 1 - i].status === 'seen'){
+				break;
+			}
+			
+			let updateEffect = await Messages.updateOne(
+				{_id : chat._id,"messages._id":chat.messages[chat.messages.length - (i+1)]._id},
+				{$set:{"messages.$.status":"seen"}})
+		}
+	
+	}
+
+	if(chat.members.includes(req.user._id)){
+		let anotherOne = 'hi';
+	
+		if(chat.members[0] == req.user._id){
+			 anotherOne = await Sockets.findOne({userId:chat.members[1]})
+		}else{
+			 anotherOne = await Sockets.findOne({userId:chat.members[0]})
+		}
+		
+		const pageNo = req.params.page;
+		const pagination = 100;
+
+		const pages = Math.ceil(chat.messages.length / 100);
+		let	msg = paginate(pageNo,pagination,chat.messages);
+		res.json({"msgs":msg,"pages":pages,"online":anotherOne.online});	
+	}else{
+		res.json({"error" : "access denied!"});
+	}
+	
+	}catch(err){
+		res.json({"error" : "" + err});
+	}
 });
 
 
+// req.user._id
 
 router.get('/contacts',varify,async(req,res)=>{
-	try{const messages = await Messages.findOne({userId : req.user._id});
-	let contactx = [];
+	try{
+		const chats = await Messages.find({members:{$all:[req.user._id]}}).sort({date:-1});
+		let contacts = [];
+		let user = '';
+		for(let i=0;i<chats.length;i++){
+			if(chats[i].members[1] === req.user._id){
+				user = await User.findOne({_id:chats[i].members[0]})
+			}else{
+				user = await User.findOne({_id:chats[i].members[1]})
+			}
+			
+			let newmsgs = 0;
 
-	for(let i=0;i<messages.contacts.length;i++){
-		let user = await User.findOne({_id:messages.contacts[i]})
-		let data = {_id:user._id,username:user.name,email:user.email}
-		contactx.push(data);
-	}
-	res.send(contactx);
-	}catch(err){}
+			for(let j=0;j<chats[i].messages.length;j++){
+				if(chats[i].messages[chats[i].messages.length - (j+1)].senderId !== req.user._id){
+					if(chats[i].messages[chats[i].messages.length - (j+1)].status === 'seen'){
+						break;
+					}
+					newmsgs = newmsgs + 1; 
+				}
+			}
+			
+			contacts.push({
+					chatId : chats[i]._id,
+					username : user.name,
+					userId : user._id,
+					lastMsg : chats[i].messages[chats[i].messages.length - 1],
+					time : chats[i].date,
+					unseen : newmsgs
+				})
+		}
+		res.json(contacts);
+	}catch(err){res.json({"error":""+err})}
 })
 
-router.patch('/messageSeen',varify,async(req,res)=>{
-	try{const msgs = await setMsgSeen(req.body.userId,req.body._id)
-	res.json(msgs);
-		}catch(err){}
 
-})
+// req.user._id
+// req.body.chatId
+// req.body.content
 
-router.patch('/send',varify,async(req,res)=>{
+router.patch('/send',varify,async(req,res)=>{	
 	try{
 	let updateEffect = await Messages.updateOne(
-	{userId : req.user._id},
+	{_id : req.body.chatId},
 	{$push:{messages:{
-		"content" : req.body.content,
 		"senderId" : req.user._id,
-		"recieverId" : req.body.recieverId
+		"content" : req.body.content
 	}}})
-	updateEffect = await Messages.findOne({userId : req.user._id})
-	updateEffect2 = await Messages.updateOne(
-	{userId : req.body.recieverId},
-	{$push:{messages:{
-		"ref":updateEffect.messages[updateEffect.messages.length - 1]._id,
-		"content" : req.body.content,
-		"senderId" : req.user._id,
-		"recieverId" : req.body.recieverId
-	}}})
-	updateEffect2 = await Messages.findOne({userId : req.body.recieverId})
+	
+	let updateEffect2 = await Messages.updateOne(
+	{_id : req.body.chatId},
+	{$set:{date: new Date().toISOString()}}
+	)
 
-	res.json({
-		"senderMsg" : updateEffect.messages[updateEffect.messages.length - 1],
-		"recieverMsg" :updateEffect2.messages[updateEffect2.messages.length - 1]
-	})
+	updateEffect = await Messages.findOne({_id : req.body.chatId})
+	res.json({"senderMsg" : updateEffect.messages[updateEffect.messages.length - 1]})
 	}catch(err){
-		res.json({"error":err});
+		res.json({"error":"a"+err });
 	}
 	})
+
+// req.body.email
+// req.user._id
 
 router.patch('/addcontact',varify, async(req,res)=>{
 	try{		
 	const chatUser = await User.findOne({email:req.body.email});
-	const messages = await Messages.findOne({userId : req.user._id});
+
 	if(chatUser._id == req.user._id){
 		res.json({"error":"it's your email Id"});
 	}else{
-
-	let contact = messages.contacts.filter(contact => contact == chatUser._id)
-
-	if(contact.length == 0){
-		if(chatUser){
-		Messages.updateOne(
-			{userId : req.user._id},
-			{$push:{contacts : chatUser._id}}
-		)
-		.then(msg => res.json({_id:chatUser._id,email:chatUser.email,username:chatUser.name}))
-		.catch(err => res.send(err))
+		const chat1 = await Messages.find({members:{$all:[chatUser._id,req.user._id]}});
+		if(chat1.length !== 0){
+			res.json({"error" : "already added"})
 		}else{
-			res.json({"error":"contact not found"})
-		}}else{
-		res.json({"error":"contact already added"});
-	}	
-	}}catch(err){
-		res.json({"error":"contact not found"})
+		const chat = new Messages({
+			socketId : '',
+			members:[req.user._id,chatUser._id],
+			messages:[{senderId:req.user._id,type:"greet",content:"added "+ chatUser.name +  " as friend"}]
+		})
+
+		chat.save().then(chat => {
+			res.json(
+				{
+					username:chatUser.name,
+					chatId:chat._id,
+					lastMsg : chat.messages[chat.messages.length - 1],
+					time : chat.date
+				})}).catch(err => res.json({"error":err}))
+	}}}catch(err){
+		res.json({"error":"contact not found" + err})
 	}
 })
 
 module.exports = router;
+
+
+// req.body.chatId
+// req.body.msgId
+
+// router.patch('/messageSeen',varify,async(req,res)=>{
+// 	try{
+// 		let updateEffect = await Messages.updateOne(
+// 			{_id : req.body.chatId,"messages._id":req.body.msgId},
+// 			{$set:{"messages.$.status":"seen"}})
+// 		res.send("success");
+// 	}catch(err){res.send("" + err);}
+// })

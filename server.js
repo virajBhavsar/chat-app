@@ -11,6 +11,7 @@ const auth = require('./routes/auth');
 const tokenCheck = require('./routes/tokenCheck');
 const messages = require('./routes/messages');
 const Messages = require('./models/messages');
+const Sockets = require('./models/sockets');
 
 // Body Parser middleware
 app.use(bodyParser.json());
@@ -53,39 +54,50 @@ const io = socket(server,{
     }});
 
 //initializing the socket io connection 
+
+
 io.on("connection", socket => {
-  console.log("new connection");
-  socket.on('send',(msg)=>{
-    Messages.findOne({userId:msg.recieverId})
-    .then(reciever => {
+  console.log("new connection : " + socket.id);
+  
+  socket.on('send',(active,msg)=>{
+    Sockets.findOne({userId:active.userId})
+    .then(reciever => { 
       if(reciever.online){
+        console.log(msg);
+        console.log(reciever);
         socket.to(reciever.socketId).emit('recieve',msg);
       }
     })
     .catch(err => console.log(err));
   })
-  socket.on('sendAck',(msg)=>{
-      Messages.findOne({userId:msg.senderId})
-    .then(sender => {
-      if(sender.online){
-        socket.to(sender.socketId).emit('recieveAck',msg.ref);
-      }
-    })
-    .catch(err => console.log(err));
-  })
+
+  // socket.on('sendAck',(msg)=>{
+  //     Messages.findOne({userId:msg.senderId})
+  //   .then(sender => {
+  //     if(sender.online){
+  //       socket.to(sender.socketId).emit('recieveAck',msg.ref);
+  //     }
+  //   })
+  //   .catch(err => console.log(err));
+  // })
+  
   socket.on('goOnline',(user)=>{
-    Messages.findOneAndUpdate({userId : user._id},{online:true,socketId:socket.id})
-      .then(msg => io.emit('onlineStatus',true,msg.userId))
-      .catch(err => console.log(err))
+    Sockets.findOneAndUpdate({userId : user._id},{online:true,socketId:socket.id})
+      .then(socketInfo => io.emit('onlineStatus',true,socketInfo.userId))
+      .catch(err => "")
   })
+  
   socket.on('goOffline',()=>{
-    Messages.findOneAndUpdate({socketId : socket.id},{online:false,socketId:""})
-      .then(msg => io.emit('onlineStatus',false,msg.userId))
-      .catch(err => console.log(err))
+    Sockets.findOneAndUpdate({socketId : socket.id},{online:false,socketId:""})
+      .then(socketInfo => io.emit('onlineStatus',false,socketInfo.userId))
+      .catch(err => "")
   })
+  
   socket.on('disconnect',()=>{
-    console.log("user disconnected" + socket.id);
-    console.log("emited")
+    Sockets.findOneAndUpdate({socketId : socket.id},{online:false,socketId:""})
+      .then(socketInfo => io.emit('onlineStatus',false,socketInfo.userId))
+      .catch(err => "")
+    
   })
 })
 
@@ -98,6 +110,7 @@ io.on("connection", socket => {
 
 // db.messages.drop()
 // db.users.drop()
+// db.sockets.drop()
 // db.createCollection("messages")
 // db.createCollection("users")
 

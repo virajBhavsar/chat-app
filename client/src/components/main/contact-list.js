@@ -1,18 +1,23 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Contact from './contact'
 
-class ContactList extends Component{
-	
-	render(){
-		return(
+class ContactList extends Component {
 
-		<div className="contacts">
-		{this.props.contacts.map(contact => (
-			<Contact lastmsg={this.props.lastmsg} setActive={() => this.props.handleSetActive(contact)} className={this.props.active.email === contact.email ? "one-contact active-contact" : "one-contact"} key={contact._id} contact={contact}/>
-			)	
-		)}
-		</div>
-		
+	render() {
+		return (
+
+			<div className="contacts">
+				{this.props.contacts.map((contact, index) => (
+					<Contact 
+						user={this.props.user} 
+						setActive={() => this.props.handleSetActive(contact, index)}
+						className={this.props.active.email === contact.email ? "one-contact active-contact" : "one-contact"} 
+						key={contact.chatId} 
+						contact={contact} />
+				)
+				)}
+			</div>
+
 		);
 	}
 }

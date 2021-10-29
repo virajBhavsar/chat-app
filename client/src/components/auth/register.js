@@ -66,8 +66,8 @@ function Register (props) {
 			<Errors />
 			
 			<p className="other-link">
-				don't have account 
-				<Link to='/register'> register</Link>
+				already have an account 
+				<Link to='/login'>Login</Link>
 			</p>
 
 			</div>
