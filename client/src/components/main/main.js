@@ -24,16 +24,17 @@ class Main extends Component {
      }
 
      
-  handleSetFirst = (lastMsg) => {
+  handleSetFirst = (chatId,lastMsg) => {
     let cons = [...this.state.contacts];
-    let index = 0;
 
     for(let i=0;i<cons.length;i++){
-      if(cons[i].chatId === this.state.active.chatId){
-        index = i;
+      if(cons[i].chatId === chatId || cons[i].userId === lastMsg.senderId){
       
-        let removed = cons.splice(index,1);
+        let removed = cons.splice(i,1);
         removed[0].lastMsg = lastMsg;
+        if(chatId !== this.state.active.chatId){
+          removed[0].unseen = removed[0].unseen + 1;
+        }
 
         cons.splice(0,0,removed[0]);
         this.setState({
@@ -42,6 +43,19 @@ class Main extends Component {
       break;
       }
     }
+  }
+  contactLastMsgSeen = (userId) => {
+    let cons = [...this.state.contacts];
+
+    for(let i=0;i<cons.length;i++){
+      if(cons[i].userId === userId){
+        cons[i].lastMsg.status = "seen";
+        break;
+      }
+    }
+    this.setState({
+      contacts : cons,
+    })
   }
 
   handleSetActive = (contact,index) => {
@@ -66,10 +80,12 @@ class Main extends Component {
       if(contact.data.error){
         this.props.popup(contact.data.error,false);
       }else{
-        this.handleSetActive(contact.data);
+        // this.handleSetActive(contact.data);
         this.props.popup('contact added successfully',true);
+        contact.data.unseen = 0;
         this.setState({
-        contacts: [contact.data,...this.state.contacts]
+         active:contact.data,
+         contacts: [contact.data,...this.state.contacts]
       })
     }
     }
@@ -92,7 +108,8 @@ class Main extends Component {
                   />
                 
                 <Messages 
-                  handleSetFirst={this.handleSetFirst} 
+                  handleSetFirst={this.handleSetFirst}
+                  contactLastMsgSeen={this.contactLastMsgSeen}
                   user={this.props.user} 
                   active={this.state.active} 
                   socket={this.props.socket}

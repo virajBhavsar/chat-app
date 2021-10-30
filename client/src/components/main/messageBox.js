@@ -19,6 +19,26 @@ class MessageBox extends Component {
 		} catch (err) {
 		}
 	}
+	
+	recieveAck = () => {
+		
+		let msgs = [...this.state.messages];
+
+		for(let i=0;i<msgs.length;i++){
+
+			if(msgs[msgs.length - (i + 1)].status === "seen"){
+				break;
+			}else{
+				if(msgs[msgs.length - (i + 1)].senderId === this.props.user._id){
+					msgs[msgs.length - (i + 1)].status = "seen";
+				}
+			}
+		}
+		
+		this.setState({
+			messages : msgs,
+		})
+	}
 
 	async componentDidUpdate(prevProp, prevState) {
 		this.props.socket.off('onlineStatus').on('onlineStatus', (status, userId) => {
@@ -29,44 +49,54 @@ class MessageBox extends Component {
 				})
 			}
 		})
+
 		if (prevState.messages !== this.state.messages) {
-			this.props.socket.off('recieve').on('recieve', async (msg) => {
-				
+			this.props.socket.off('recieve').on('recieve', async (msg,chatId) => {
+					
+				this.props.handleSetFirst(chatId,msg);
+
 				if (msg.senderId === this.props.active.userId) {
-					// this.props.socket.emit('sendAck', msg)
+
 					this.setState({
 						messages: [...this.state.messages, msg],
-					})
+					});
 					this.gotoBottom();
-					// await axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
-					// 	{ userId: msg.senderId, _id: msg._id }
-					// 	, {
-					// 		headers: {
-					// 			"auth-token": this.props.user.token
-					// 		}
-					// 	})
-
+					if(this.state.online){
+						this.props.socket.emit('sendAck', this.props.active.userId,this.props.user._id);
+					}				
 				}
-			})
-		}
 
+			})
+			
+			this.props.socket.off('recieveAck').on('recieveAck', async (userId) => {
+				if(userId === this.props.active.userId){
+					this.recieveAck();
+				}
+					this.props.contactLastMsgSeen(userId);
+			})
+
+
+		}
+		
 		if (prevProp.active !== this.props.active) {
 			const messages = await axios.get(`http://127.0.0.1:5500/api/messages/${this.props.active.chatId}/1`, {
 				headers: {
 					"auth-token": this.props.user.token
 				}
 			});
-			console.log(messages);
+		
 			this.setState({
 				messages: messages.data.msgs,
 				maxPage: messages.data.pages,
 				online: messages.data.online
 			})
 			this.gotoBottom();
+			
+			if(this.state.online){
+				this.props.socket.emit('sendAck', this.props.active.userId,this.props.user._id);
+			}
 		}
 	}
-
-
 
 	prependMessages = async (callback) => {
 
@@ -109,7 +139,7 @@ class MessageBox extends Component {
 					"auth-token": this.props.user.token
 				}
 			})
-		this.props.handleSetFirst(message.data.senderMsg);
+		this.props.handleSetFirst(this.props.active.chatId,message.data.senderMsg);
 		this.setState({
 			messageValue: '',
 			messages: [...this.state.messages, message.data.senderMsg],
@@ -118,23 +148,6 @@ class MessageBox extends Component {
 		if(this.state.online){
 			this.props.socket.emit('send', this.props.active,message.data.senderMsg);
 		}
-				// this.props.socket.off('recieveAck').on('recieveAck', msgRef => {
-
-		// 	let index = this.state.messages.findIndex(x => x._id === msgRef)
-		// 	const msg = this.state.messages[index]
-		// 	msg.status = "seen";
-		// 	this.setState({
-		// 		messages: [
-		// 			...this.state.messages.slice(0, index),
-		// 			msg,
-		// 			...this.state.messages.slice(index + 1)
-		// 		]
-		// 	})
-		// 	axios.patch("http://127.0.0.1:5500/api/messages/messageSeen",
-		// 		{ _id: msg._id, userId: this.props.user._id },
-		// 		{ headers: { "auth-token": this.props.user.token } }
-		// 	)
-		// });
 	}
 
 

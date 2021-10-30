@@ -22,6 +22,7 @@ router.get('/:_id/:page',varify, async(req, res) => {
 	const chat = await Messages.findOne({_id : req.params._id});
 	for(let i=0;i<chat.messages.length;i++){
 		if(chat.messages[chat.messages.length - (i+1)].senderId !== req.user._id){
+			
 			if(chat.messages[chat.messages.length - 1 - i].status === 'seen'){
 				break;
 			}
@@ -30,7 +31,6 @@ router.get('/:_id/:page',varify, async(req, res) => {
 				{_id : chat._id,"messages._id":chat.messages[chat.messages.length - (i+1)]._id},
 				{$set:{"messages.$.status":"seen"}})
 		}
-	
 	}
 
 	if(chat.members.includes(req.user._id)){

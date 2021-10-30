@@ -57,29 +57,29 @@ const io = socket(server,{
 
 
 io.on("connection", socket => {
-  console.log("new connection : " + socket.id);
+  
   
   socket.on('send',(active,msg)=>{
     Sockets.findOne({userId:active.userId})
     .then(reciever => { 
       if(reciever.online){
-        console.log(msg);
-        console.log(reciever);
-        socket.to(reciever.socketId).emit('recieve',msg);
+        socket.to(reciever.socketId).emit('recieve',msg,active.chatId);
       }
     })
     .catch(err => console.log(err));
   })
 
-  // socket.on('sendAck',(msg)=>{
-  //     Messages.findOne({userId:msg.senderId})
-  //   .then(sender => {
-  //     if(sender.online){
-  //       socket.to(sender.socketId).emit('recieveAck',msg.ref);
-  //     }
-  //   })
-  //   .catch(err => console.log(err));
-  // })
+  socket.on('sendAck',(userId,recieverId)=>{
+  
+      Sockets.findOne({userId:userId})
+        .then(sender => {
+
+        if(sender.online){
+          socket.to(sender.socketId).emit('recieveAck',recieverId);
+      }
+    })
+    .catch(err => console.log(err));
+  })
   
   socket.on('goOnline',(user)=>{
     Sockets.findOneAndUpdate({userId : user._id},{online:true,socketId:socket.id})
@@ -101,18 +101,4 @@ io.on("connection", socket => {
   })
 })
 
-
-// cd driveX/js/chat-app
-// npm start
-// cd client
-// npm start
-
-
-// db.messages.drop()
-// db.users.drop()
-// db.sockets.drop()
-// db.createCollection("messages")
-// db.createCollection("users")
-
-// git remote add origin http://chatapp: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@github.com/virajBhavsar/chat-app.git
 
