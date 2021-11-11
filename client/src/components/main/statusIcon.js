@@ -20,6 +20,12 @@ render(){
 								<FcCheckmark />
 							</div>
 							)					
+						}else if(this.props.status === "invisible"){
+							return(
+							<div className="msg-status-icon opacity0">
+								<FcCheckmark />
+							</div>
+							)					
 						}else{
 						return(
 							<div className="msg-status-icon">

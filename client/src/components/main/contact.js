@@ -11,12 +11,21 @@ class Contact extends Component{
 			return "unseen-sticker";
 		}
 	}
-	getStatucIcon = () => {
+	getStatusIcon = () => {
 		if(this.props.contact.lastMsg.senderId === this.props.user._id){
 			return <StatusIcon status={this.props.contact.lastMsg.status} />;
 		}else{
-			return '';
+			return <StatusIcon status={"invisible"}></StatusIcon>;
 		}
+	}
+
+	getLeftPadding = () => {
+		if(this.props.contact.lastMsg.senderId === this.props.user._id){
+			return 'last-msg-content padding1';
+		}else{
+			return 'last-msg-content';
+		}
+
 	}
 
 	render(){
@@ -28,8 +37,8 @@ class Contact extends Component{
 				<h1 className="contact-name">{this.props.contact.username}</h1>
 				<div className="last-msg">
 					<div className="last-msg-data">
-						{this.getStatucIcon()}
-						<span className="last-msg-content">{this.props.contact.lastMsg.content}</span>
+						{this.getStatusIcon()}
+						<span className={this.getLeftPadding()}>{this.props.contact.lastMsg.content}</span>
 					</div>
 					<p className="lastmsg-time">{date.toLocaleString('en-US', { hour: 'numeric',minute:"numeric", hour12: true })}</p>
 				</div>

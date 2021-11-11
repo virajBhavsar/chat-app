@@ -53,7 +53,7 @@ router.get('/:_id/:page',varify, async(req, res) => {
 	}
 	
 	}catch(err){
-		res.json({"error" : "" + err});
+		res.json({"error":"no messages"});
 	}
 });
 
@@ -93,7 +93,7 @@ router.get('/contacts',varify,async(req,res)=>{
 				})
 		}
 		res.json(contacts);
-	}catch(err){res.json({"error":""+err})}
+	}catch(err){res.json({"error":"no contacts"})}
 })
 
 
@@ -118,7 +118,7 @@ router.patch('/send',varify,async(req,res)=>{
 	updateEffect = await Messages.findOne({_id : req.body.chatId})
 	res.json({"senderMsg" : updateEffect.messages[updateEffect.messages.length - 1]})
 	}catch(err){
-		res.json({"error":"a"+err });
+		res.json({"error":"error ! sending msg check your internet connection" });
 	}
 	})
 
@@ -149,9 +149,9 @@ router.patch('/addcontact',varify, async(req,res)=>{
 					chatId:chat._id,
 					lastMsg : chat.messages[chat.messages.length - 1],
 					time : chat.date
-				})}).catch(err => res.json({"error":err}))
+				})}).catch(err => res.json({"error":"error"}))
 	}}}catch(err){
-		res.json({"error":"contact not found" + err})
+		res.json({"error":"contact not found"})
 	}
 })
 

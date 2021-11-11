@@ -18,9 +18,16 @@ class App extends Component {
   //  state={
     user: {},
     privatePageAccess:false,
-    popup:{visible:true,success:true,message:'hi'}
+    popup:{visible:false,success:false,message:''}
   }
 
+  componentDidMount = () => {
+    setTimeout(()=>{
+      this.setState({
+        popup:{visible:false,success:false,message:''}
+      })
+    },5000)
+  }
   popup = (msg,succ) => {
     this.setState({
       popup:{visible:true,success:succ,message:msg}
@@ -50,7 +57,6 @@ class App extends Component {
     },()=>{
      window.localStorage.setItem('state', JSON.stringify(this.state));
     });
-    
   }
   render() {
     return (
