@@ -26,9 +26,14 @@ class Contact extends Component{
 			<img alt="profpic" className="profile-pic-small" src={imgUrl} />
 			<div onClick={this.props.setActive} className="contact-data">
 				<h1 className="contact-name">{this.props.contact.username}</h1>
-				<div className="last-msg">{this.getStatucIcon()}<p>{this.props.contact.lastMsg.content}</p></div>
-				<p className="lastmsg-time">{date.toLocaleString('en-US', { hour: 'numeric',minute:"numeric", hour12: true })}</p>
-				<p className={this.stickerVisible()}>{this.props.contact.unseen}</p>
+				<div className="last-msg">
+					<div className="last-msg-data">
+						{this.getStatucIcon()}
+						<span className="last-msg-content">{this.props.contact.lastMsg.content}</span>
+					</div>
+					<p className="lastmsg-time">{date.toLocaleString('en-US', { hour: 'numeric',minute:"numeric", hour12: true })}</p>
+				</div>
+				<div className={this.stickerVisible()}>{this.props.contact.unseen}</div>
 			</div>
 		</div>		
 		);

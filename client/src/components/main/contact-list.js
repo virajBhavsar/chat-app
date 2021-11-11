@@ -11,7 +11,7 @@ class ContactList extends Component {
 					<Contact 
 						user={this.props.user} 
 						setActive={() => this.props.handleSetActive(contact, index)}
-						className={this.props.active.email === contact.email ? "one-contact active-contact" : "one-contact"} 
+						className={this.props.active.chatId !== contact.chatId ? "one-contact" : "one-contact active-contact"} 
 						key={contact.chatId} 
 						contact={contact} />
 				)

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import imgUrl from '../images/unnamed.jpg'
+import imgUrl from '../images/unnamed.jpg';
+import backImg from '../images/chat.svg';
 import Messages from './messages.js';
 import { GrSend } from 'react-icons/gr';
 import axios from 'axios';
@@ -132,6 +133,7 @@ class MessageBox extends Component {
 
 	handleSendMsg = async (e) => {
 		e.preventDefault();
+		if(this.state.messageValue !== ""){
 		const message = await axios.patch("http://127.0.0.1:5500/api/messages/send",
 			{ "content": this.state.messageValue, "chatId": this.props.active.chatId }
 			, {
@@ -149,7 +151,7 @@ class MessageBox extends Component {
 			this.props.socket.emit('send', this.props.active,message.data.senderMsg);
 		}
 	}
-
+}
 
 	handleChange = (event) => {
 		this.setState({
@@ -179,7 +181,11 @@ class MessageBox extends Component {
 		} else {
 			return (
 				<div className="message-box">
-					<h1>message-box</h1>
+					<div className="made-simple">
+						<h1>Simple, Reliable Messaging</h1>
+						<p>Message your friends and family for free</p>
+					</div>
+					<img alt="profpic" className="backImg" src={backImg} />
 				</div>
 			);
 		}

@@ -4,9 +4,9 @@ import { Link, Redirect } from "react-router-dom";
 
 
 function Register (props) {
-		const [username,setUsername] = useState('testuser');	
-		const [email,setEmail] = useState('test@1.com');
-		const [password,setPassword] = useState('testtest');
+		const [username,setUsername] = useState('');	
+		const [email,setEmail] = useState('');
+		const [password,setPassword] = useState('');
 		const [error,setError] = useState('');
 
 		const handleUsernameChange = (event) => {

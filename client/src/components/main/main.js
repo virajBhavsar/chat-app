@@ -78,7 +78,7 @@ class Main extends Component {
           }
       }) 
       if(contact.data.error){
-        this.props.popup(contact.data.error,false);
+        this.props.popup("not found",false);
       }else{
         // this.handleSetActive(contact.data);
         this.props.popup('contact added successfully',true);
